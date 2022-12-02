@@ -1,96 +1,196 @@
-const conway=document.getElementById('grid');
-//let h1=document.createElement('canvas');
+const canvas=document.getElementById('gamefield');
+const ctx = canvas.getContext('2d');
+
+const resolution = 10;
+canvas.width = 600;
+canvas.height =400;
+
+const cols = canvas.width / resolution;
+const rows = canvas.height / resolution;
+
+// //
+
+function make2dArray(){
+//   let arr = new Array(cols);
+//   for(let i=0;i<arr.length;i++){
+//     arr[i]= new Array(rows);
+//     arr[i].map(()=>Math.floor(Math.random()*2))
+
+//   }
+//  //console.log('arr',arr)
+//   return arr;
+return new Array(cols).fill(null)
+    .map(() => new Array(rows).fill(null)
+      .map(() => Math.floor(Math.random() * 2)));
+
+}
+
+
+// function makeGrid(cols,rows){
+  
+//   let grids=make2dArray(cols,rows);
+//  for(let i=0; i<cols;i++){
+//   for(let j=0;j<rows;j++){
+//     grids[i][j]=Math.floor(Math.random()*2);
+//   }
+//  }
+ 
+//  return grids
+// }
+let  grid=make2dArray(cols,rows); 
+
+ console.log('grid',grid)
+ 
+ requestAnimationFrame(update);
+ function update(){
+  grid = nextGen(grid);
+  renderGrid(grid);
+  requestAnimationFrame(update);
+};
+
+//need a copy for nextGen to reference so it can update a new version based on previous state
+function nextGen(grid){
+  const nextGen = grid.map(arr=>[...arr]);//exactly copy of grid
+
+  for(let col=0;col<grid.length;col++){
+    for(let row=0; row<grid[col].length;row++){
+      const cell = grid[col][row];
+      let numNeighbours = 0;
+      // loop through cell's neighbors;
+      /*
+          1   2  3 .     (-1,-1) . (-1,0), (-1,1)
+          4   C  6 .     (0, 1) . (0, 0), (0, 1)
+          7   8  9       (1, -1) . (1, 0), (1, 1)
+       */
+
+       for(let i=-1;i<2;i++){
+         for(let j=-1; j<2; j++){
+           if(i===0 && j===0){
+            continue;
+           }
+           const x_cell = col + i;
+           const y_cell = row + j;
+
+           if (x_cell >= 0 && y_cell >= 0 && x_cell < cols && y_cell < rows){
+           const currentNeighbour = grid[col+i][row+j];
+           
+           numNeighbours+=currentNeighbour;
+           }
+
+           
+
+         }
+       }   
+//rules
+           //if a living cell has more than three neighbors, it dies
+           if(cell===1 && numNeighbours>3 ){
+            nextGen[col][row] = 0;
+           }else if( cell===1 && numNeighbours < 2){
+            nextGen[col][row] = 0;
+           }else if(cell===0 && numNeighbours===3){
+            nextGen[col][row] = 1;
+           }
+
+    }
+  }
+  return nextGen;
+}
+
+//console.log('nextGen',nextGen(grid));
+
+ function renderGrid(grid){
+   for(let col=0;col<grid.length;col++){
+    for(let row=0; row<grid[col].length;row++){
+      const cell = grid[col][row];
+      ctx.beginPath();
+      ctx.rect(col*resolution,row*resolution,resolution,resolution);
+      //ctx.stroke();
+      //ctx.strokeStyle = 'blue';
+       ctx.fillStyle = cell ? 'black' : 'white';
+      ctx.fill();
+    }
+   }
+
+
+ }
+
+ 
+
+ 
 
 
 
 
-// function setup(){
-//     createCanvas(400, 300); 
-    
+
+// const resolution = 10;
+// canvas.width = 600;
+// canvas.height = 400;
+
+// const COLS = canvas.width / resolution;
+// const ROWS = canvas.height / resolution;
+
+// function buildGrid() {
+//   return new Array(COLS).fill(null)
+//     .map(() => new Array(ROWS).fill(null)
+//       .map(() => Math.floor(Math.random() * 2)));
 // }
 
-// function draw(){
-//     background(220); 
-      
-//     // Use color() function 
-//     let c = color('green'); 
-  
-//     // Use fill() function to fill color 
-//     fill(c); 
-      
-//     // Draw a rectangle 
-//     rect(50, 50, 300, 200); 
+//  let grid = buildGrid();
+//  console.log('grid',grid)
+
+// requestAnimationFrame(update);
+
+// function update() {
+//   grid = nextGen(grid);
+//   render(grid);
+//   requestAnimationFrame(update);
 // }
 
-// var x = document.createElement("CANVAS");
+// function nextGen(grid) {
+//   const nextGen = grid.map(arr => [...arr]);
 
-  
-//h1.setAttribute("id","gameCanvas")
- // conway.appendChild(h1);
+//   for (let col = 0; col < grid.length; col++) {
+//     for (let row = 0; row < grid[col].length; row++) {
+//       const cell = grid[col][row];
+//       let numNeighbours = 0;
+//       for (let i = -1; i < 2; i++) {
+//         for (let j = -1; j < 2; j++) {
+//           if (i === 0 && j === 0) {
+//             continue;
+//           }
+//           const x_cell = col + i;
+//           const y_cell = row + j;
 
-  (function () {
-    const canvas = document.getElementById('gameCanvas')
-    const ctx = canvas.getContext('2d')
-  
-  })()
-
-// class Cell
-// {
-//     // Set the size for each cell
-//     static width = 10;
-//     static height = 10;
-
-//     constructor (context, gridX, gridY)
-//     {
-//         this.context = context;
-
-//         // Store the position of this cell in the grid
-//         this.gridX = gridX;
-//         this.gridY = gridY;
-
-//         // Make random squares alive
-//         this.alive = Math.random() > 0.5;
-//     }
-
-//     draw() {
-//         // Draw a square, let the state determine the color
-//         this.context.fillStyle = this.alive?'#ff8080':'#303030';
-//         this.context.fillRect(this.gridX * Cell.width, this.gridY * Cell.height, Cell.width, Cell.height);
-//     }
-// }
-
-// this.gameObjects = [];
-
-// createGrid()
-// {
-//     for (let y = 0; y < GameWorld.numRows; y++) {
-//         for (let x = 0; x < GameWorld.numColumns; x++) {
-//             this.gameObjects.push(new Cell(this.context, x, y));
+//           if (x_cell >= 0 && y_cell >= 0 && x_cell < COLS && y_cell < ROWS) {
+//             const currentNeighbour = grid[col + i][row + j];
+//             numNeighbours += currentNeighbour;
+//           }
 //         }
+//       }
+
+//       // rules
+//       if (cell === 1 && numNeighbours < 2) {
+//         nextGen[col][row] = 0;
+//       } else if (cell === 1 && numNeighbours > 3) {
+//         nextGen[col][row] = 0;
+//       } else if (cell === 0 && numNeighbours === 3) {
+//         nextGen[col][row] = 1;
+//       }
 //     }
+//   }
+//   return nextGen;
 // }
 
-// // Start your loop for the first time
-// window.requestAnimationFrame(() => this.gameLoop());
+// function render(grid) {
+//   for (let col = 0; col < grid.length; col++) {
+//     for (let row = 0; row < grid[col].length; row++) {
+//       const cell = grid[col][row];
 
-// gameLoop() {
-//     // Check the surrounding of each cell
-//     this.checkSurrounding();
-
-//     // Clear the screen
-//     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-//     // Draw all the game objects
-//     for (let i = 0; i < this.gameObjects.length; i++) {
-//         this.gameObjects[i].draw();
+//       ctx.beginPath();
+//       ctx.rect(col * resolution, row * resolution, resolution, resolution);
+//       ctx.fillStyle = cell ? 'black' : 'white';
+//       ctx.fill();
+//       // ctx.stroke();
 //     }
-
-//     // The loop function has reached it's end, keep requesting new frames
-//     setTimeout( () => {
-//         window.requestAnimationFrame(() => this.gameLoop());
-//     }, 100) // The delay will make the game easier to follow
+//   }
 // }
-
-
-
-
