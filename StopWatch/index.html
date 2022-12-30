@@ -9,23 +9,31 @@
 </head>
 <body>
     <div class="container">
-        <div class="outer_circle">
+     
+        <div id="outer_bg" class="outer_circle">
             <div class="inner_circle">
-                
+                <div id="timer" class="time"> 00:00:000</div>  
             </div>
         </div>
-
-        <div id="timer" class="time"> 00:00:000</div>
+  
+       <div class="btn_wrapper">
         <button id="start" class="btn">
             start
         </button>
         <button id="stop" class="btn">
-            pause
+                stop
         </button>
         <button id="reset" class="btn">
             reset
         </button>
+
        
+    </div>
+    <h3 class="timeStampTitle">Time Stamp :</h3>
+    <ol id="timestamp">
+            
+    </ol>
+    
 
     </div>
     <script src="./script.js"></script>
